@@ -1,10 +1,10 @@
-<!-- 版本：v2.5.1  |  宠物每日打卡台  |  主题：薄荷奶咖·线条小狗·小红书精致感·顶部头像·今日待办·打卡密度·多宠切换·记录中心·健康事项提醒·特殊情况提醒·记账本 -->
+<!-- 版本：v2.6.0  |  宠物每日打卡台  |  主题：薄荷奶咖·线条小狗·小红书精致感·顶部头像·今日待办·打卡密度·多宠切换·记录中心·健康事项提醒·特殊情况提醒·记账本·分享海报 -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>宠物每日打卡台 v2.5.1</title>
+<title>宠物每日打卡台 v2.6.0</title>
 <style>
   :root{
     --bg:#F7F5F0; --bg-soft:#F0EBE3;
@@ -404,6 +404,50 @@
   .crop-btns .c-ok{background:var(--coffee);color:#fff}
   .crop-btns button:active{transform:scale(.97)}
 
+  /* ===== v2.6.0 新增 ===== */
+  /* 完成度卡片副标 + 撤销提示 */
+  .progress-card .sub-line{font-size:11px;color:var(--ink-light);margin-top:5px;font-weight:500}
+  .progress-card .pct small{font-size:11px}
+  /* 健康提醒独立进度 */
+  .hr-head{display:flex;align-items:center;gap:8px;margin:22px 0 12px}
+  .hr-head .hr-title{font-size:17px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px}
+  .hr-head .hr-title .dot{width:6px;height:6px;border-radius:50%;background:var(--pink-deep)}
+  .hr-head .hr-badge{margin-left:auto;font-size:11px;font-weight:700;color:var(--coffee);background:var(--mint-light);padding:4px 10px;border-radius:999px;white-space:nowrap}
+  .hr-note{font-size:11px;color:var(--ink-light);margin:-6px 0 10px;font-weight:500}
+  .todo .t-check.undoable{border-style:solid;background:var(--mint);border-color:var(--mint-deep)}
+  .todo.done .t-sub{text-decoration:none}
+  /* 汇总弹窗（健康今日汇总） */
+  .sum-mask{position:fixed;inset:0;background:rgba(40,30,28,.5);display:none;align-items:center;justify-content:center;z-index:70;padding:18px}
+  .sum-mask.show{display:flex}
+  .sum-box{background:var(--card);border-radius:var(--radius);width:100%;max-width:360px;max-height:82vh;overflow-y:auto;padding:20px 18px 16px;box-shadow:var(--shadow);animation:pop .18s ease}
+  .sum-box h3{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+  .sum-box .sum-date{font-size:12px;color:var(--ink-soft);font-weight:500;margin-bottom:16px}
+  .sum-status{background:var(--mint-light);border-radius:16px;padding:14px;margin-bottom:16px}
+  .sum-status .ss-lab{font-size:11px;color:var(--coffee);font-weight:700;margin-bottom:6px}
+  .sum-status .ss-val{font-size:15px;font-weight:700;color:var(--ink)}
+  .sum-status .ss-empty{font-size:12.5px;color:var(--ink-soft);font-weight:500;line-height:1.6}
+  .sum-sub{font-size:12px;font-weight:700;color:var(--ink-light);margin:0 0 8px 2px;letter-spacing:.3px}
+  .sum-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+  .sum-item{display:flex;align-items:center;gap:10px;background:var(--card-soft);border-radius:14px;padding:11px 12px}
+  .sum-item .si-ic{width:20px;height:20px;color:var(--coffee);flex:none}
+  .sum-item .si-name{font-size:13.5px;font-weight:600;color:var(--ink);flex:1;min-width:0}
+  .sum-item .si-time{font-size:11px;color:var(--ink-light);font-weight:600;flex:none}
+  .sum-item .si-del{background:#F3EFEA;border:none;border-radius:999px;padding:5px 10px;font-size:11px;font-weight:600;color:var(--ink-soft);cursor:pointer;font-family:inherit;flex:none}
+  .sum-item .si-del:active{background:var(--pink)}
+  .sum-btns{display:flex;gap:10px}
+  .sum-btns button{flex:1;border:none;border-radius:999px;padding:12px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:.15s}
+  .sum-btns .s-close{background:#F3EFEA;color:var(--ink-soft)}
+  .sum-btns .s-go{background:var(--coffee);color:#fff}
+  .sum-btns button:active{transform:scale(.97)}
+  /* 海报 */
+  .poster-wrap{text-align:center}
+  .poster-wrap img{width:100%;max-width:340px;border-radius:18px;box-shadow:var(--shadow);border:1px solid rgba(141,108,99,.08)}
+  .poster-btns{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .poster-btns .btn{flex:1;min-width:130px}
+  /* 记录表格通用 */
+  .rec-empty{font-size:12.5px;color:var(--ink-light);text-align:center;padding:20px 0;font-weight:500}
+  .rec-table .del-rec{padding:5px 10px}
+
 </style>
 </head>
 <body>
@@ -436,8 +480,18 @@
   </div>
 </div>
 
+<!-- 今日健康汇总弹窗 -->
+<div class="sum-mask" id="sumMask">
+  <div class="sum-box" id="sumBox"></div>
+</div>
+
+<!-- 打卡海报弹窗 -->
+<div class="sum-mask" id="posterMask">
+  <div class="sum-box" id="posterBox"></div>
+</div>
+
 <script>
-const VERSION='2.5.1';
+const VERSION='2.6.0';
 const LS_KEY='petCheckin_v1';
 const DAY_MS=86400000;
 const WEEKDAYS=['日','一','二','三','四','五','六'];
@@ -463,10 +517,16 @@ const QUOTES=[
   '你已经把最好的爱给了 TA，这就足够了。'
 ];
 
-var data=loadData();
-let page='home', detailMod=null, calView=null;
-const content=document.getElementById('content'), bottomnav=document.getElementById('bottomnav');
+const QUAD_KEYS=[
+  {id:'food',name:'吃饭',icon:'bowl'},
+  {id:'water',name:'喝水',icon:'drop'},
+  {id:'poop',name:'便便',icon:'paw'},
+  {id:'health_daily',name:'健康',icon:'heart'}
+];
 
+var data=loadData();
+let page='home', detailMod=null, calView=null, editingProfile=false;
+const content=document.getElementById('content'), bottomnav=document.getElementById('bottomnav');
 function loadData(){
   try{
     const raw=localStorage.getItem(LS_KEY);
@@ -493,14 +553,15 @@ function loadData(){
       if(!d.reminders) d.reminders={};
       if(!d.specials) d.specials={};
       if(!d.ledger) d.ledger={};
+      if(!d.undoStack) d.undoStack={};
+      if(!d.prefs) d.prefs={};
       migrateReminders(d);
       return d;
     }
   }catch(e){}
   const id='p_'+Date.now().toString(36);
   return {pets:[{id,name:'',breed:'',gender:'',birth:'',avatar:''}],currentPetId:id,records:{},streak:{},lastDate:{},flat:{},waterLog:{},reminders:{},specials:{},ledger:{}};
-}
-function saveData(){ localStorage.setItem(LS_KEY,JSON.stringify(data)); }
+}function saveData(){ localStorage.setItem(LS_KEY,JSON.stringify(data)); }
 function todayKey(){ return new Date().toLocaleDateString('zh-CN'); }
 function fmtDate(){ const d=new Date(); return `${d.getMonth()+1}月${d.getDate()}日 星期${WEEKDAYS[d.getDay()]}`; }
 function currentPetId(){ return data.currentPetId; }
@@ -585,6 +646,16 @@ function migrateReminders(d){
 function getReminders(pid){
   if(!data.reminders[pid]) data.reminders[pid]=defaultReminders();
   return data.reminders[pid];
+}
+/* 完成度是否纳入健康提醒（默认 false：完成度只统计四宫格，避免首日 3/7=43% 的困惑） */
+function countHealthInProgress(){
+  if(!data.prefs) data.prefs={};
+  return data.prefs.countHealthInProgress===true;
+}
+function setCountHealthInProgress(v){
+  if(!data.prefs) data.prefs={};
+  data.prefs.countHealthInProgress=!!v;
+  saveData();
 }
 function computeReminder(r){
   const today=new Date(); today.setHours(0,0,0,0);
@@ -737,6 +808,10 @@ function closeCropper(){ cropMask.classList.remove('show'); cropState=null; }
 document.getElementById('cropOk').onclick=cropConfirm;
 document.getElementById('cropCancel').onclick=closeCropper;
 cropMask.addEventListener('click',(e)=>{ if(e.target===cropMask) closeCropper(); });
+['sumMask','posterMask'].forEach(id=>{
+  const m=document.getElementById(id);
+  if(m) m.addEventListener('click',(e)=>{ if(e.target===m) m.classList.remove('show'); });
+});
 
 // ========== SVG 图标库 ==========
 const sv=(s)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${s}</svg>`;
@@ -858,14 +933,19 @@ const MODULES={
 
 // ========== 首页 ==========
 function renderHome(){
-  const rec=todayRecord();
+  const pet=currentPet();
   const quad=buildQuad();
   const health=buildHealthReminders();
-  const all=[...quad,...health];
-  const total=all.length, c=all.filter(t=>t.done).length;
+
+  // 完成度：默认只统计四宫格（吃饭/喝水/便便/健康），健康提醒独立展示
+  const qTotal=quad.length, qDone=quad.filter(t=>t.done).length;
+  const hTotal=health.length, hDone=health.filter(t=>t.done).length;
+  const includeHealth=countHealthInProgress();
+  const total=includeHealth?(qTotal+hTotal):qTotal;
+  const c=includeHealth?(qDone+hDone):qDone;
+  const pct=total?Math.round(c/total*100):0;
+  // 四宫格全完成时给一个 100% 的庆祝（不影响计算口径）
   const flatToday=(data.flat[todayKey()]||[]).length>0;
-  const pct=flatToday?100:(total?Math.round(c/total*100):0);
-  const pet=currentPet();
 
   content.innerHTML=`
     <div class="home-head">
@@ -886,19 +966,20 @@ function renderHome(){
     <div class="progress-card">
       <div class="puppy-icon">${ICONS.calendar}</div>
       <div class="info">
-        <div class="head-row">
-          <div class="lab">${esc(pet.name)?esc(pet.name)+' 的':'今日'}完成度<span>✨</span></div>
+          <div class="head-row">
+          <div class="lab">${esc(pet.name)?esc(pet.name)+' 的':'今日'}完成度 ✨</div>
           <div class="pct">${pct}<small>%</small></div>
         </div>
         <div class="pbar-wrap">
           <div class="pbar-fill" style="width:${pct}%"></div>
         </div>
+        <div class="sub-line">今日待办 ${qDone}/${qTotal}${includeHealth?` · 健康提醒 ${hDone}/${hTotal}`:''}${flatToday?' · 今日已躺平 🌙':''}</div>
       </div>
     </div>
 
     ${renderQuad(quad)}
 
-    ${renderHealthReminders(health)}
+    ${renderHealthReminders(health, includeHealth)}
 
     <div class="tips-card">
       <div class="pin"></div>
@@ -918,6 +999,8 @@ function renderHome(){
       </div>
       <button class="btn" id="lieFlatBtn">允许躺平</button>
     </div>
+
+    <button class="add-reminder" id="posterBtn">📸 生成今日打卡海报</button>
   `;
 
   document.getElementById('tipsRefresh').onclick=()=>{ document.getElementById('tipsBody').innerHTML=randomTip(); };
@@ -928,21 +1011,29 @@ function renderHome(){
     if(!data.flat[k]) data.flat[k]=[];
     data.flat[k].push(new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}));
     saveData();
-    alert('已记录 🌙 允许躺平也是爱的一部分，今日完成度已拉满');
+    alert('已记录 🌙 允许躺平也是爱的一部分');
     renderHome();
   };
-  // 四宫格：按钮快速打卡，卡片主体进详情
+  document.getElementById('posterBtn').onclick=()=>openPoster('day');
+  // 四宫格：按钮快速打卡/撤销，卡片主体进详情
   content.querySelectorAll('.quad-card').forEach(card=>{
     const id=card.dataset.q;
     const btn=card.querySelector('.quad-btn');
     btn.addEventListener('click',(e)=>{ e.stopPropagation(); toggleTodo(id); });
-    card.addEventListener('click',()=>{ openDetail(id); });
+    card.addEventListener('click',()=>{
+      // 健康卡片改为「今日健康汇总」弹窗，而不是空的选择页
+      if(id==='health_daily'){ openHealthSummary(); return; }
+      openDetail(id);
+    });
   });
-  // 健康提醒：右侧勾选快速打卡，卡片主体进详情
+  // 健康提醒：右侧勾选=完成并重置倒计时；已完成的再次点击=撤销
   content.querySelectorAll('.todo').forEach(t=>{
     const id=t.dataset.id;
-    t.querySelector('.t-check').addEventListener('click',(e)=>{ e.stopPropagation(); toggleTodo(id); });
-    t.addEventListener('click',()=>{ openDetail(id); });
+    t.querySelector('.t-check').addEventListener('click',(e)=>{
+      e.stopPropagation();
+      toggleReminderDone(id);
+    });
+    t.addEventListener('click',()=>{ openEditReminder(id); });
   });
   bindCalendarNav();
   // 首页多宠切换
@@ -964,18 +1055,13 @@ function petSwitchHtml(){
 function buildQuad(){
   const rec=todayRecord();
   const done=(id)=>rec[id]&&rec[id].length>0;
-  const quad=[
-    {id:'food',name:'吃饭',icon:ICONS.bowl},
-    {id:'water',name:'喝水',icon:ICONS.drop},
-    {id:'poop',name:'便便',icon:ICONS.paw},
-    {id:'health_daily',name:'健康',icon:ICONS.heart}
-  ];
+  const quad=QUAD_KEYS.map(q=>({id:q.id,name:q.name,icon:ICONS[q.icon]||ICONS.paw}));
   quad.forEach(q=>q.done=done(q.id));
   return quad;
 }
 
 function renderQuad(quad){
-  return `<div class="section-title"><div class="dot"></div>今日待办</div>
+  return `<div class="section-title"><div class="dot"></div>今日待办<span style="font-size:11px;color:var(--ink-light);font-weight:500;margin-left:auto">完成度只统计这 4 项</span></div>
   <div class="quad-grid">
     ${quad.map(q=>`<div class="quad-card ${q.done?'done':''}" data-q="${q.id}">
       <div class="quad-icon">${q.icon}</div>
@@ -995,22 +1081,59 @@ function buildHealthReminders(){
   return list;
 }
 
-function renderHealthReminders(list){
-  return `<div class="section-title"><div class="dot"></div>健康提醒</div>
-  <div class="todo-wrap">
-    ${list.map(x=>`<div class="todo ${x.done?'done':''} ${x.due?'p1':''}" data-id="${x.id}">
-      <div class="t-ic">${x.icon}</div>
-      <div class="t-main"><div class="t-name">${esc(x.name)}</div><div class="t-sub">${esc(x.sub)}</div></div>
-      <div class="t-check">${ICONS.check}</div>
-    </div>`).join('')}
-  </div>`;
+/* 健康提醒独立展示：不计入完成度（除非用户显式开启） */
+function renderHealthReminders(list, includeHealth){
+  const done=list.filter(x=>x.done).length;
+  const total=list.length;
+  return `<div class="hr-head">
+      <div class="hr-title"><div class="dot"></div>健康提醒</div>
+      <div class="hr-badge">${total?`今日已处理 ${done}/${total}`:'暂无提醒'}</div>
+    </div>
+    <div class="hr-note">周期性事项，勾选后会自动更新「上次处理日期」并重置倒计时 · 不计入完成度${includeHealth?'（已手动开启计入）':''}</div>
+    <div class="todo-wrap">
+      ${total?list.map(x=>`<div class="todo ${x.done?'done':''} ${x.due?'p1':''}" data-id="${x.id}">
+        <div class="t-ic">${x.icon}</div>
+        <div class="t-main"><div class="t-name">${esc(x.name)}</div><div class="t-sub">${esc(x.sub)}</div></div>
+        <div class="t-check" title="${x.done?'点击撤销':'点击完成'}">${ICONS.check}</div>
+      </div>`).join(''):'<p class="empty-tip">还没有健康提醒，去「健康提醒」页添加吧～</p>'}
+    </div>`;
 }
 
+/* 四宫格打卡 / 撤销（再次点击即撤销） */
 function toggleTodo(id){
   const rec=todayRecord();
-  if(rec[id]&&rec[id].length){ rec[id]=[]; }
+  const was=!!(rec[id]&&rec[id].length);
+  if(was){ rec[id]=[]; }
   else { rec[id]=[{t:new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}),note:''}]; }
-  updateStreak(); saveData(); renderHome();
+  updateStreak(); saveData();
+  render();
+  toast(was?('已撤销「'+nameOfQuad(id)+'」打卡'):('已打卡「'+nameOfQuad(id)+'」'));
+}
+function nameOfQuad(id){
+  const q=QUAD_KEYS.find(x=>x.id===id);
+  return q?q.name:id;
+}
+
+/* 轻提示 */
+let toastEl=null, toastTimer=null;
+function toast(msg){
+  if(!toastEl){
+    toastEl=document.createElement('div');
+    toastEl.style.cssText='position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(8px);background:rgba(58,53,48,.92);color:#fff;font-size:13px;font-weight:600;padding:10px 18px;border-radius:999px;z-index:90;opacity:0;transition:.22s;pointer-events:none;max-width:80vw;text-align:center';
+    document.body.appendChild(toastEl);
+  }
+  toastEl.textContent=msg;
+  requestAnimationFrame(()=>{ toastEl.style.opacity='1'; toastEl.style.transform='translateX(-50%) translateY(0)'; });
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>{ toastEl.style.opacity='0'; toastEl.style.transform='translateX(-50%) translateY(8px)'; },1800);
+}
+
+/* 健康提醒勾选：完成 → 更新 lastDone + 重置倒计时；再次点击 → 撤销并回滚 */
+function toggleReminderDone(id){
+  const rec=todayRecord();
+  const already=!!(rec[id]&&rec[id].length);
+  if(already){ undoCompleteReminder(id); return; }
+  completeReminder(id);
 }
 
 function completeReminder(id){
@@ -1018,6 +1141,9 @@ function completeReminder(id){
   const r=list.find(x=>x.id===id);
   if(!r) return;
   const tk=todayKey();
+  // 记录撤销所需的「上一次处理日期」（不写进用户数据字段，单独存）
+  if(!data.undoStack) data.undoStack={};
+  data.undoStack[id]={prevLastDone:r.lastDone||'',day:tk};
   r.lastDone=tk;
   if(!r.history) r.history=[];
   if(!r.history.includes(tk)) r.history.push(tk);
@@ -1025,7 +1151,27 @@ function completeReminder(id){
   const rec=todayRecord();
   if(!rec[id]) rec[id]=[];
   rec[id].push({t:new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}),note:'已处理'});
-  updateStreak(); saveData(); render();
+  updateStreak(); saveData();
+  render();
+  toast('「'+r.name+'」已完成，倒计时已重置 🎉');
+}
+
+/* 撤销健康提醒的完成：回滚 lastDone 与历史，并清掉今日记录 */
+function undoCompleteReminder(id){
+  const list=getReminders(currentPetId());
+  const r=list.find(x=>x.id===id);
+  const rec=todayRecord();
+  const tk=todayKey();
+  if(rec[id]) rec[id]=[];
+  if(r){
+    const u=(data.undoStack||{})[id];
+    r.lastDone=(u&&u.prevLastDone!==undefined)?u.prevLastDone:'';
+    if(r.history) r.history=r.history.filter(d=>d!==tk);
+  }
+  if(data.undoStack) delete data.undoStack[id];
+  saveData();
+  render();
+  toast('已撤销'+(r?'「'+r.name+'」':'')+'，倒计时已还原');
 }
 
 function bindCalendarNav(){
@@ -1042,6 +1188,402 @@ function addPet(){
 }
 
 function randomTip(){ return TIPS[Math.floor(Math.random()*TIPS.length)]; }
+
+// ========== 今日健康汇总弹窗（四宫格「健康」入口） ==========
+function openHealthSummary(){
+  const rec=todayRecord();
+  const pet=currentPet();
+
+  // 今日已完成的健康相关事项：四宫格 health_daily + 健康提醒 + 特殊情况
+  const remList=getReminders(currentPetId());
+  const spList=getSpecials(currentPetId());
+
+  const rows=[];
+  if(rec.health_daily&&rec.health_daily.length){
+    rec.health_daily.forEach(e=>rows.push({ic:ICONS.heart,name:'整体状态',time:e.t||'',note:e.status||''}));
+  }
+  remList.forEach(r=>{
+    (rec[r.id]||[]).forEach(e=>rows.push({ic:ICONS[r.icon]||ICONS.pill,name:r.name,time:e.t||'',note:e.note||''}));
+  });
+  spList.forEach(r=>{
+    (rec[r.id]||[]).forEach(e=>rows.push({ic:ICONS[r.icon]||ICONS.heart,name:r.name,time:e.t||'',note:e.note||''}));
+  });
+  // 每天日常清洁类打卡也一并展示
+  [['bowl_wash','洗食盆水碗','bowl'],['litter','换猫砂尿垫','litterbox'],['disinfect','环境消毒','drop'],['bed','洗窝垫毯子','bed']].forEach(([k,nm,ic])=>{
+    (rec[k]||[]).forEach(e=>rows.push({ic:ICONS[ic]||ICONS.pill,name:nm,time:e.t||'',note:e.note||'',key:k}));
+  });
+
+  // 待处理的健康提醒（逾期 / 今天到期）
+  const due=remList.map(r=>({r,c:computeReminder(r)})).filter(x=>x.c.diff!==null&&x.c.diff<=3).sort((a,b)=>a.c.diff-b.c.diff);
+  const never=remList.filter(r=>!r.lastDone);
+
+  const sumMask=document.getElementById('sumMask');
+  document.getElementById('sumBox').innerHTML=`
+    <h3>💖 ${esc(pet.name)||'宝贝'}的今日健康</h3>
+    <div class="sum-date">${fmtDate()}</div>
+
+    <div class="sum-status">
+      <div class="ss-lab">今日整体状态</div>
+      ${rows.length?`<div class="ss-val">今日已记录 ${rows.length} 项健康事项</div>`:`<div class="ss-empty">今天还没有记录健康事项～<br>记得观察 TA 的精神、食欲和便便哦。</div>`}
+    </div>
+
+    ${rows.length?`<div class="sum-sub">已打卡（点右侧可撤销）</div>
+    <div class="sum-list">
+      ${rows.map(x=>`<div class="sum-item">
+        <div class="si-ic">${x.ic}</div>
+        <div class="si-name">${esc(x.name)}${x.note?` · ${esc(x.note)}`:''}</div>
+        <div class="si-time">${esc(x.time)}</div>
+        ${x.key?`<button class="si-del" data-k="${x.key}">撤销</button>`:''}
+      </div>`).join('')}
+    </div>`:''}
+
+    ${due.length||never.length?`<div class="sum-sub">需要留意</div>
+    <div class="sum-list">
+      ${due.map(x=>`<div class="sum-item">
+        <div class="si-ic">${ICONS[x.r.icon]||ICONS.pill}</div>
+        <div class="si-name">${esc(x.r.name)}</div>
+        <div class="si-time" style="color:${x.c.diff<0?'#C15B50':'var(--coffee-deep)'}">${x.c.diff<0?`逾期 ${Math.abs(x.c.diff)} 天`:(x.c.diff===0?'今天到期':`还有 ${x.c.diff} 天`)}</div>
+      </div>`).join('')}
+      ${never.length?`<div class="sum-item"><div class="si-ic">${ICONS.special}</div><div class="si-name">${never.map(r=>esc(r.name)).join('、')}</div><div class="si-time">还没记录过</div></div>`:''}
+    </div>`:''}
+
+    <div class="sum-btns">
+      <button class="s-close" id="sumClose">关闭</button>
+      <button class="s-go" id="sumRecord">记录整体状态</button>
+    </div>
+  `;
+  sumMask.classList.add('show');
+  document.getElementById('sumClose').onclick=()=>sumMask.classList.remove('show');
+  document.getElementById('sumRecord').onclick=()=>{
+    sumMask.classList.remove('show');
+    openDetail('health_daily');
+  };
+  document.getElementById('sumBox').querySelectorAll('.si-del').forEach(b=>b.onclick=()=>{
+    toggleTodo(b.dataset.k);
+    sumMask.classList.remove('show');
+  });
+}
+
+// ========== 打卡海报（分享 / 小红书） ==========
+function openPoster(mode){
+  const mask=document.getElementById('posterMask');
+  const box=document.getElementById('posterBox');
+  box.innerHTML=`<h3>📸 打卡海报</h3><div class="sum-date">生成中…</div>`;
+  mask.classList.add('show');
+  drawPoster(mode).then(url=>{
+    box.innerHTML=`<h3>📸 我的打卡海报</h3>
+      <div class="sum-date">长按图片保存，或点下方按钮下载</div>
+      <div class="poster-wrap"><img id="posterImg" src="${url}" alt="打卡海报"></div>
+      <div class="poster-btns">
+        <button class="btn secondary" id="posterWeek">周报 / 日报</button>
+        <button class="btn" id="posterSave">保存图片</button>
+        <button class="btn ghost" id="posterClose" style="flex:none">关闭</button>
+      </div>`;
+    document.getElementById('posterClose').onclick=()=>mask.classList.remove('show');
+    document.getElementById('posterSave').onclick=()=>{
+      const a=document.createElement('a');
+      a.href=url; a.download=`${(currentPet().name||'宝贝')}的打卡海报_${todayISO()}.png`;
+      a.click();
+      toast('已保存到相册/下载目录');
+    };
+    document.getElementById('posterWeek').onclick=()=>openPoster(mode==='day'?'week':'day');
+  }).catch(()=>{
+    box.innerHTML=`<h3>📸 打卡海报</h3><div class="sum-date">海报生成失败，请重试</div>
+      <div class="sum-btns"><button class="s-close" id="posterClose2">关闭</button></div>`;
+    document.getElementById('posterClose2').onclick=()=>mask.classList.remove('show');
+  });
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+
+/* 海报里画一个简单的小爪印 */
+function drawPaw(ctx,x,y,r,color){
+  ctx.save();
+  ctx.fillStyle=color;
+  ctx.beginPath(); ctx.ellipse(x,y+r*.35,r*.55,r*.45,0,0,Math.PI*2); ctx.fill();
+  const toes=[
+    {dx:-r*.55,dy:-r*.55,rx:r*.22,ry:r*.28,a:-.35},
+    {dx:r*.55,dy:-r*.55,rx:r*.22,ry:r*.28,a:.35},
+    {dx:0,dy:-r*.85,rx:r*.24,ry:r*.32,a:0}
+  ];
+  toes.forEach(t=>{
+    ctx.beginPath(); ctx.ellipse(x+t.dx,y+t.dy,t.rx,t.ry,t.a,0,Math.PI*2); ctx.fill();
+  });
+  ctx.restore();
+}
+
+/* 海报里画圆圈对勾 / 空心圆 */
+function drawCircleCheck(ctx,x,y,r,done){
+  ctx.save();
+  ctx.lineWidth=3;
+  if(done){
+    ctx.fillStyle='#E8F2EF'; ctx.strokeStyle='#A8C9BE';
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle='#6B4F47'; ctx.lineWidth=4; ctx.lineCap='round'; ctx.lineJoin='round';
+    ctx.beginPath(); ctx.moveTo(x-r*.35,y); ctx.lineTo(x-r*.08,y+r*.28); ctx.lineTo(x+r*.42,y-r*.35); ctx.stroke();
+  }else{
+    ctx.strokeStyle='#A9A299';
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function wrapText(ctx,text,maxW,font){
+  ctx.font=font;
+  const lines=[]; let cur='';
+  for(const ch of text){
+    if(ctx.measureText(cur+ch).width>maxW){ lines.push(cur); cur=ch; }
+    else cur+=ch;
+  }
+  if(cur) lines.push(cur);
+  return lines;
+}
+
+function quadDoneCount(k){
+  const r=petRecords()[k]||{};
+  return QUAD_KEYS.filter(q=>r[q.id]&&r[q.id].length>0).length;
+}
+
+/* 小红书风格打卡海报（3:4 竖图，圆角卡片、柔和配色、整齐排版） */
+async function drawPoster(mode){
+  const W=900, S=2;
+  const pet=currentPet();
+  const isWeek=mode==='week';
+
+  const C={bg:'#F9F7F3',card:'#FFFFFF',ink:'#3A3530',soft:'#7D756C',light:'#A9A299',
+    coffee:'#8D6C63',coffeeDeep:'#6B4F47',mint:'#CFE4DD',mintDeep:'#A8C9BE',mintLight:'#E8F2EF',
+    pink:'#F8E1E0',pinkDeep:'#E8B4B0',cream:'#FFF9E6',creamDeep:'#F5E6C2'};
+  const FONT='"PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,sans-serif';
+
+  // 小图标绘制（替代 emoji，避免部分环境显示方框）
+  const drawMiniIcon=(ctx,type,x,y,s,color)=>{
+    ctx.save(); ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=Math.max(1.5,s*.1); ctx.lineCap='round'; ctx.lineJoin='round';
+    if(type==='calendar'){
+      ctx.strokeRect(x-s*.45,y-s*.35,s*.9,s*.7); ctx.beginPath(); ctx.moveTo(x-s*.45,y-s*.08); ctx.lineTo(x+s*.45,y-s*.08); ctx.stroke();
+      ctx.fillRect(x-s*.22,y-s*.45,s*.1,s*.18); ctx.fillRect(x+s*.12,y-s*.45,s*.1,s*.18);
+    }else if(type==='note'){
+      ctx.strokeRect(x-s*.38,y-s*.45,s*.76,s*.9); ctx.beginPath(); ctx.moveTo(x-s*.22,y-s*.18); ctx.lineTo(x+s*.22,y-s*.18); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x-s*.22,y+s*.02); ctx.lineTo(x+s*.15,y+s*.02); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x-s*.22,y+s*.22); ctx.lineTo(x+s*.2,y+s*.22); ctx.stroke();
+    }else if(type==='fire'){
+      ctx.beginPath(); ctx.moveTo(x,y+s*.45); ctx.bezierCurveTo(x-s*.4,y+s*.2,x-s*.45,y-s*.2,x-s*.15,y-s*.45); ctx.bezierCurveTo(x,y-s*.15,x,y-s*.15,x+s*.15,y-s*.45); ctx.bezierCurveTo(x+s*.45,y-s*.2,x+s*.4,y+s*.2,x,y+s*.45); ctx.fill();
+      ctx.fillStyle='#FFF8E7'; ctx.beginPath(); ctx.arc(x,y+.02,s*.12,0,Math.PI*2); ctx.fill();
+    }else if(type==='chat'){
+      ctx.strokeStyle=color; ctx.beginPath(); ctx.ellipse(x,y,s*.45,s*.34,0,0,Math.PI*2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x-s*.08,y+s*.3); ctx.lineTo(x+s*.14,y+s*.46); ctx.lineTo(x+s*.12,y+s*.24); ctx.stroke();
+    }else if(type==='check'){
+      ctx.beginPath(); ctx.moveTo(x-s*.28,y); ctx.lineTo(x-s*.06,y+s*.26); ctx.lineTo(x+s*.34,y-s*.3); ctx.stroke();
+    }
+    ctx.restore();
+  };
+
+  let avatarImg=null;
+  if(pet.avatar){
+    avatarImg=await new Promise(res=>{
+      const im=new Image();
+      im.onload=()=>res(im);
+      im.onerror=()=>res(null);
+      im.src=pet.avatar;
+      if(im.complete&&im.naturalWidth) res(im);
+    }).catch(()=>null);
+  }
+
+  const recs=petRecords();
+  const tk=todayKey();
+  const dNow=new Date();
+
+  // 区间
+  const span=isWeek?7:1;
+  const rangeDays=[];
+  for(let i=span-1;i>=0;i--) rangeDays.push(new Date(Date.now()-i*DAY_MS).toLocaleDateString('zh-CN'));
+  const activeDays=rangeDays.filter(d=>recs[d]&&Object.keys(recs[d]).length>0).length;
+  let checks=0; rangeDays.forEach(d=>{ if(recs[d]) checks+=Object.keys(recs[d]).length; });
+  const streak=(data.streak&&data.streak[currentPetId()])||0;
+
+  // 先以临时 canvas 计算内容高度
+  const tmp=document.createElement('canvas'); tmp.width=W; tmp.height=10;
+  const tc=tmp.getContext('2d');
+  const PAD=52, cardW=W-PAD*2;
+
+  // 打卡密度行数
+  const cols=7, gap=10;
+  const cellW=(cardW-(cols-1)*gap)/cols;
+  const cellH=isWeek?72:54;
+  const gridDays=[];
+  if(isWeek){ gridDays.push(...rangeDays); }
+  else{
+    const fy=dNow.getFullYear(), fm=dNow.getMonth();
+    const first=new Date(fy,fm,1), ld=new Date(fy,fm+1,0).getDate();
+    for(let i=0;i<first.getDay();i++) gridDays.push(null);
+    for(let dd=1;dd<=ld;dd++) gridDays.push(new Date(fy,fm,dd).toLocaleDateString('zh-CN'));
+  }
+  const gRows=Math.ceil(gridDays.length/cols);
+  const quote=QUOTES[Math.floor(Math.random()*QUOTES.length)].replace(/<[^>]+>/g,'');
+  const qLines=wrapText(tc,quote,cardW-56,`24px ${FONT}`);
+
+  // 计算总高
+  let totalH=64+118+116+170+36+32+gRows*(cellH+gap)+32+(isWeek?0:126)+(qLines.length*40+56)+28+80;
+  const H=Math.max(1200, totalH+40);
+
+  // 正式 canvas
+  const cv=document.createElement('canvas');
+  cv.width=W*S; cv.height=H*S;
+  const ctx=cv.getContext('2d');
+  ctx.scale(S,S);
+
+  // 背景
+  ctx.fillStyle=C.bg; ctx.fillRect(0,0,W,H);
+  // 顶部装饰弧形
+  ctx.fillStyle=C.pink;
+  ctx.beginPath();
+  ctx.ellipse(W/2,-180,W+60,360,0,0,Math.PI*2);
+  ctx.fill();
+
+  // 装饰爪印
+  ctx.globalAlpha=.12;
+  drawPaw(ctx,80,180,48,C.coffeeDeep);
+  drawPaw(ctx,W-70,140,36,C.coffeeDeep);
+  ctx.globalAlpha=1;
+
+  let y=64;
+
+  // 顶部标题区
+  ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+  ctx.fillStyle=C.ink; ctx.font=`bold 42px ${FONT}`;
+  ctx.fillText((pet.name||'我的宝贝')+'的每日打卡台',W/2,y+40);
+  ctx.fillStyle=C.soft; ctx.font=`22px ${FONT}`;
+  const sub=isWeek?`${rangeDays[0]} - ${rangeDays[rangeDays.length-1]} · 本周报告`
+    :`${dNow.getFullYear()}年${dNow.getMonth()+1}月${dNow.getDate()}日 · ${['周日','周一','周二','周三','周四','周五','周六'][dNow.getDay()]}`;
+  ctx.fillText(sub,W/2,y+78);
+  y+=118;
+
+  // 头像（居中）
+  const avR=58, avX=W/2, avY=y+avR;
+  if(avatarImg){
+    ctx.save();
+    ctx.beginPath(); ctx.arc(avX,avY,avR,0,Math.PI*2); ctx.closePath(); ctx.clip();
+    const r=Math.max(avR*2/avatarImg.width,avR*2/avatarImg.height);
+    const dw=avatarImg.width*r, dh=avatarImg.height*r;
+    ctx.drawImage(avatarImg,avX-dw/2,avY-dh/2,dw,dh);
+    ctx.restore();
+  }else{
+    ctx.fillStyle=C.mintLight;
+    ctx.beginPath(); ctx.arc(avX,avY,avR,0,Math.PI*2); ctx.fill();
+    drawPaw(ctx,avX,avY,40,C.coffee);
+  }
+  ctx.strokeStyle='#fff'; ctx.lineWidth=6;
+  ctx.beginPath(); ctx.arc(avX,avY,avR,0,Math.PI*2); ctx.stroke();
+  y+=avR*2+30;
+
+  // 主数据卡片
+  const cardH=170, cardR=28;
+  ctx.fillStyle=C.card;
+  ctx.shadowColor='rgba(58,53,48,.08)'; ctx.shadowBlur=28; ctx.shadowOffsetY=10;
+  roundRect(ctx,PAD,y,cardW,cardH,cardR); ctx.fill();
+  ctx.shadowColor='transparent'; ctx.shadowBlur=0; ctx.shadowOffsetY=0;
+
+  const stats=isWeek
+    ? [[String(activeDays),'打卡天数','calendar'],[String(checks),'累计打卡','note'],[String(streak),'连续坚持','fire']]
+    : [[quadDoneCount(tk)+'/4','今日待办','check'],[String(checks),'今日打卡','note'],[String(streak),'连续坚持','fire']];
+  const colW=cardW/3;
+  stats.forEach((s,i)=>{
+    const cx=PAD+colW*i+colW/2;
+    drawMiniIcon(ctx,s[2],cx,y+36,28,C.coffee);
+    ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    ctx.font=`bold 48px ${FONT}`;
+    ctx.fillStyle=C.ink;
+    ctx.fillText(s[0],cx,y+100);
+    ctx.font=`22px ${FONT}`;
+    ctx.fillStyle=C.soft;
+    ctx.fillText(s[1],cx,y+135);
+    if(i>0){
+      ctx.strokeStyle='rgba(141,108,99,.12)'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(PAD+colW*i,y+35); ctx.lineTo(PAD+colW*i,y+cardH-35); ctx.stroke();
+    }
+  });
+  y+=cardH+36;
+
+  // 打卡密度区
+  ctx.textAlign='left';
+  ctx.fillStyle=C.ink; ctx.font=`bold 26px ${FONT}`;
+  ctx.fillText(isWeek?'本周打卡密度':'本月打卡密度',PAD,y); y+=32;
+
+  gridDays.forEach((dstr,i)=>{
+    const r=Math.floor(i/cols), col=i%cols;
+    const x=PAD+col*(cellW+gap), yy=y+r*(cellH+gap);
+    if(!dstr) return;
+    const n=recs[dstr]?Object.keys(recs[dstr]).length:0;
+    const done=n>0;
+    ctx.fillStyle=done?(n>=4?C.mintDeep:(n>=2?C.mint:C.mintLight)):'#F0EBE3';
+    roundRect(ctx,x,yy,cellW,cellH,14); ctx.fill();
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillStyle=(n>=2)?'#fff':(done?C.coffeeDeep:C.light);
+    ctx.font=`bold ${isWeek?22:18}px ${FONT}`;
+    ctx.fillText(dstr.split('/')[2],x+cellW/2,yy+cellH/2+1);
+    if(dstr===tk){
+      ctx.strokeStyle=C.coffeeDeep; ctx.lineWidth=2.5;
+      roundRect(ctx,x,yy,cellW,cellH,14); ctx.stroke();
+    }
+  });
+  y+=gRows*(cellH+gap)+32;
+
+  // 今日待办（日报）
+  if(!isWeek){
+    ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+    ctx.fillStyle=C.ink; ctx.font=`bold 26px ${FONT}`;
+    ctx.fillText('今日待办',PAD,y); y+=34;
+
+    const qw=(cardW-3*16)/4;
+    QUAD_KEYS.forEach((q,i)=>{
+      const x=PAD+i*(qw+16);
+      const done=(recs[tk]&&recs[tk][q.id]&&recs[tk][q.id].length>0);
+      ctx.fillStyle=done?C.mintLight:C.card;
+      ctx.shadowColor='rgba(58,53,48,.05)'; ctx.shadowBlur=12; ctx.shadowOffsetY=4;
+      roundRect(ctx,x,y,qw,96,20); ctx.fill();
+      ctx.shadowColor='transparent'; ctx.shadowBlur=0; ctx.shadowOffsetY=0;
+      drawCircleCheck(ctx,x+qw/2,y+34,17,done);
+      ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+      ctx.fillStyle=done?C.coffeeDeep:C.soft;
+      ctx.font=`bold 22px ${FONT}`;
+      ctx.fillText(q.name,x+qw/2,y+78);
+    });
+    y+=126;
+  }
+
+  // 温柔语录
+  ctx.fillStyle=C.cream;
+  ctx.shadowColor='rgba(58,53,48,.05)'; ctx.shadowBlur=16; ctx.shadowOffsetY=5;
+  const qH=qLines.length*40+56;
+  roundRect(ctx,PAD,y,cardW,qH,22); ctx.fill();
+  ctx.shadowColor='transparent'; ctx.shadowBlur=0; ctx.shadowOffsetY=0;
+  ctx.textAlign='left'; ctx.fillStyle=C.coffeeDeep; ctx.font=`bold 22px ${FONT}`;
+  ctx.textBaseline='middle';
+  ctx.fillText('铲屎官说',PAD+28+54,y+38);
+  ctx.fillStyle=C.creamDeep;
+  ctx.beginPath(); ctx.arc(PAD+28+16,y+38,18,0,Math.PI*2); ctx.fill();
+  drawMiniIcon(ctx,'chat',PAD+28+16,y+38,20,C.coffeeDeep);
+  ctx.fillStyle=C.soft; ctx.font=`24px ${FONT}`;
+  ctx.textBaseline='alphabetic';
+  qLines.forEach((ln,i)=>ctx.fillText(ln,PAD+28,y+74+i*40));
+  y+=qH+28;
+
+  // 底部品牌（紧跟内容）
+  const footY=H-44;
+  drawPaw(ctx,W/2-130,footY,10,C.light);
+  ctx.textAlign='left'; ctx.textBaseline='middle';
+  ctx.fillStyle=C.light; ctx.font=`22px ${FONT}`;
+  ctx.fillText('萌宠每日打卡台 · 记录每一个陪伴的日子',W/2-108,footY);
+
+  return Promise.resolve(cv.toDataURL('image/png'));
+}
 
 function updateStreak(){
   const pid=currentPetId();
@@ -1142,7 +1684,7 @@ function renderRecords(){
     <div class="card big-card" data-mod="wf_weight">
       <div class="icon">${ICONS.scale}</div>
       <h4>体重记录</h4>
-      <p>最近 ${lastW}kg · 已记录 ${wDays} 次</p>
+      <p>最近 ${lastW}kg · 已记录 ${wDays} 次 · 含喂食克重</p>
     </div>
 
     <div class="section-title"><div class="dot"></div>喝水记录</div>
@@ -1165,8 +1707,12 @@ function renderRecords(){
       <h4>遛弯记录</h4>
       <p>记录时长与路线</p>
     </div>
+
+    <button class="add-reminder" id="posterBtn2">📸 生成本周打卡海报</button>
   `;
   content.querySelectorAll('.card.big-card').forEach(c=>c.onclick=()=>openDetail(c.dataset.mod));
+  const pb=document.getElementById('posterBtn2');
+  if(pb) pb.onclick=()=>openPoster('week');
 }
 
 function recentWaterLogs(n=5){
@@ -1182,7 +1728,7 @@ function recentWaterLogs(n=5){
 const POOP_SHAPES={hard:'干硬',banana:'香蕉形',normal:'正常',soft:'偏软',water:'水样'};
 const POOP_COLORS={brown:'棕色',yellow:'黄色',green:'绿色',black:'黑色',blood:'带血'};
 
-// 第二页：便便 / 遛弯 每日记录表格
+// 便便 / 遛弯 / 喂食 / 喝水 每日记录表格
 function renderWfHistory(mod){
   const box=document.getElementById('wfHistory'); if(!box) return;
   const recs=petRecords();
@@ -1191,32 +1737,54 @@ function renderWfHistory(mod){
     (recs[k][mod]||[]).forEach((e,i)=>rows.push({k,i,e}));
   });
   if(!rows.length){ box.innerHTML='<p class="empty-tip">还没有记录，快来记一条吧～</p>'; return; }
-  let body='';
+  const HEAD=`<caption><span class="dot"></span>每日记录</caption>`;
+  const delBtn=(r)=>`<button class="del-rec" data-d="${r.k}" data-i="${r.i}">删除</button>`;
+  let body='', head='';
   if(mod==='wf_poop'){
+    head=`<tr><th>日期</th><th>形状</th><th>颜色 / 状态</th><th></th></tr>`;
     body=rows.map(r=>`<tr>
       <td>${r.k}</td>
       <td>${POOP_SHAPES[r.e.shape]||r.e.shape||'—'}</td>
       <td>${POOP_COLORS[r.e.color]||r.e.color||'—'}</td>
-      <td><button class="del-rec" data-d="${r.k}" data-i="${r.i}">删除</button></td>
+      <td>${delBtn(r)}</td>
     </tr>`).join('');
-    box.innerHTML=`<table class="rec-table"><caption><span class="dot"></span>每日记录</caption>
-      <thead><tr><th>日期</th><th>形状</th><th>颜色 / 状态</th><th></th></tr></thead>
-      <tbody>${body}</tbody></table>`;
-  }else{
+  }else if(mod==='wf_walk'){
+    head=`<tr><th>日期</th><th>时长</th><th>路线 / 地点</th><th></th></tr>`;
     body=rows.map(r=>`<tr>
       <td>${r.k}</td>
       <td>${r.e.min?r.e.min+' 分钟':'—'}</td>
       <td>${esc(r.e.route||'—')}</td>
-      <td><button class="del-rec" data-d="${r.k}" data-i="${r.i}">删除</button></td>
+      <td>${delBtn(r)}</td>
     </tr>`).join('');
-    box.innerHTML=`<table class="rec-table"><caption><span class="dot"></span>每日记录</caption>
-      <thead><tr><th>日期</th><th>时长</th><th>路线 / 地点</th><th></th></tr></thead>
-      <tbody>${body}</tbody></table>`;
+  }else if(mod==='wf_weight'){
+    head=`<tr><th>日期</th><th>体重</th><th>喂食</th><th>备注</th><th></th></tr>`;
+    body=rows.map(r=>`<tr>
+      <td>${r.k}</td>
+      <td>${r.e.w?parseFloat(r.e.w).toFixed(1)+' kg':'—'}</td>
+      <td>${r.e.gram?r.e.gram+' g':'—'}</td>
+      <td>${esc(r.e.note||'—')}</td>
+      <td>${delBtn(r)}</td>
+    </tr>`).join('');
+  }else if(mod==='wf_water'){
+    head=`<tr><th>日期</th><th>喝水量</th><th>备注</th><th></th></tr>`;
+    body=rows.map(r=>`<tr>
+      <td>${r.k}</td>
+      <td>${r.e.ml?r.e.ml+' ml':'—'}</td>
+      <td>${esc(r.e.note||'—')}</td>
+      <td>${delBtn(r)}</td>
+    </tr>`).join('');
+  }else{
+    head=`<tr><th>日期</th><th>记录</th><th></th></tr>`;
+    body=rows.map(r=>`<tr><td>${r.k}</td><td>${esc(r.e.note||'—')}</td><td>${delBtn(r)}</td></tr>`).join('');
   }
+  box.innerHTML=`<table class="rec-table">${HEAD}<thead>${head}</thead><tbody>${body}</tbody></table>`;
   box.querySelectorAll('.del-rec').forEach(b=>b.onclick=()=>{
     const recs2=petRecords(); const d=b.dataset.d, i=+b.dataset.i;
     if(recs2[d] && recs2[d][mod]) recs2[d][mod].splice(i,1);
-    saveData(); renderWfHistory(mod);
+    saveData();
+    renderWfHistory(mod);
+    // 体重页的折线图即时刷新
+    if(mod==='wf_weight') drawWeightChart('wf_weight');
   });
 }
 
@@ -1375,16 +1943,16 @@ function openDetail(mod){
       <div class="field"><label>备注</label><input type="text" id="fNote" placeholder="今天的饭量 / 体重变化"></div>
       <div class="btn-row">${back}<button class="btn" id="saveBtn">添加记录</button></div>
       <div id="chartBox"></div>
+      <div id="wfHistory"></div>
     </div>`;
   }else if(mod==='wf_water'){
-    const recent=recentWaterLogs(5);
     body=`<div class="detail-card"><h2>喝水记录</h2>
       <div class="field"><label>喝水量（ml）</label><input type="number" step="10" min="0" id="fMl" placeholder="如 150"></div>
       <div class="field"><label>日期</label><input type="date" id="fDate" value="${todayISO()}"></div>
       <div class="field"><label>备注</label><input type="text" id="fNote" placeholder="换了新鲜水 / 加了湿粮补水"></div>
       <div class="btn-row">${back}<button class="btn" id="saveBtn">添加记录</button></div>
       <div class="tips-line">💡 小提示：记得清洗水盆～</div>
-      ${recent?`<div class="history-list">${recent}</div>`:''}
+      <div id="wfHistory"></div>
     </div>`;
   }else if(mod==='wf_poop'){
     const shapes=[['hard','🟤','干硬'],['banana','🍌','香蕉形'],['normal','🟫','正常'],['soft','💧','偏软'],['water','💦','水样']];
@@ -1417,7 +1985,8 @@ function openDetail(mod){
   if(ph){ ph.onchange=async(e)=>{ if(e.target.files[0]) ph.dataset.url=await compressPhoto(e.target.files[0],400); }; }
 
   if(mod==='weight') drawWeightChart('weight');
-  if(mod==='wf_weight') drawWeightChart('wf_weight');
+  if(mod==='wf_weight'){ drawWeightChart('wf_weight'); renderWfHistory('wf_weight'); }
+  if(mod==='wf_water'){ renderWfHistory('wf_water'); }
   if(mod==='wf_poop'){
     ['fShape','fColor'].forEach(id=>{
       const box=document.getElementById(id);
@@ -1467,11 +2036,11 @@ function saveDetail(mod){
   else if(mod==='photo'){ entry.photo=getPhoto('fPhoto'); entry.note=get('fNote'); }
   else if(mod==='fun'){ entry.note=get('fNote'); }
   else if(mod==='health_daily'){ entry.status=get('fStatus'); }
-  else if(mod==='wf_weight'){ custom=true; entry.w=get('fW'); entry.gram=get('fGram'); entry.note=get('fNote')||''; pushTo('wf_weight'); }
+  else if(mod==='wf_weight'){ custom=true; entry.w=get('fW'); entry.gram=get('fGram'); entry.note=get('fNote')||''; pushTo('wf_weight'); stay='wf_weight'; }
   else if(mod==='wf_water'){
     const ml=get('fMl');
     if(!ml || parseFloat(ml)<=0){ alert('请输入喝水量（ml）'); return; }
-    custom=true; entry.ml=parseFloat(ml); entry.note=get('fNote')||''; pushTo('wf_water');
+    custom=true; entry.ml=parseFloat(ml); entry.note=get('fNote')||''; pushTo('wf_water'); stay='wf_water';
     if(dkey()===todayKey()){ if(!rec.water) rec.water=[]; rec.water.push({t:entry.t,note:'喝水 '+entry.ml+'ml'}); }
   }
   else if(mod==='wf_poop'){ custom=true; entry.shape=document.querySelector('#fShape .icon-chip.on')?.dataset.v||''; entry.color=document.querySelector('#fColor .icon-chip.on')?.dataset.v||''; pushTo('wf_poop'); stay='wf_poop'; }
@@ -1556,6 +2125,37 @@ function openLieFlat(){
 // ========== 档案 ==========
 function renderProfile(){
   const p=currentPet();
+  // 宠物信息视图：已有名字时默认展示信息卡片；编辑态显示表单
+  const hasInfo=!!p.name;
+  let body='';
+  if(editingProfile || !hasInfo){
+    body=`<div class="profile-card">
+      <div class="panel-head" style="padding-top:0"><h3>${esc(p.name)?'编辑 '+esc(p.name):'新建宠物档案'}</h3></div>
+      <div class="avatar-wrap" id="avatarWrap">${p.avatar?`<img src="${p.avatar}">`:'🐶'}</div>
+      <input type="file" accept="image/*" id="pAvatar" style="display:none">
+      <div class="field"><label>宠物名字</label><input type="text" id="pName" value="${esc(p.name)}" placeholder="叫什么名字？"></div>
+      <div class="field"><label>品种</label><input type="text" id="pBreed" value="${p.breed}" placeholder="如：柯基 / 英短"></div>
+      <div class="field"><label>性别</label><div class="chips" id="pGender"><span class="chip ${p.gender==='公'?'on':''}" data-v="公">弟弟</span><span class="chip ${p.gender==='母'?'on':''}" data-v="母">妹妹</span><span class="chip ${p.gender==='未知'?'on':''}" data-v="未知">未知</span></div></div>
+      <div class="field"><label>生日</label><input type="date" id="pBirth" value="${p.birth}"></div>
+      <button class="paw-save" id="pawSave">🐾 ${hasInfo?'保存修改':'和我击掌吧'}</button>
+      ${hasInfo?'<button class="btn ghost del-pet" id="cancelEditBtn">取消编辑</button>':''}
+      ${data.pets.length>1?'<button class="btn ghost del-pet" id="delPetBtn">删除这个宝贝</button>':''}
+    </div>`;
+  }else{
+    const genderLabel={公:'弟弟',母:'妹妹',未知:'未知','':'未知'};
+    const ageText=p.birth?computeAge(p.birth):'年龄未知';
+    body=`<div class="profile-card" style="text-align:center;padding:28px 22px">
+      <div class="avatar-wrap" id="avatarWrap" style="margin:0 auto 14px;width:110px;height:110px;font-size:42px">${p.avatar?`<img src="${p.avatar}">`:'🐶'}</div>
+      <input type="file" accept="image/*" id="pAvatar" style="display:none">
+      <div style="font-size:24px;font-weight:700;color:var(--ink);margin-bottom:4px">${esc(p.name)}</div>
+      <div style="font-size:14px;color:var(--ink-soft);font-weight:500;margin-bottom:18px">${esc(p.breed)||'未知品种'} · ${genderLabel[p.gender]} · ${ageText}</div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn" id="editProfileBtn">✏️ 编辑档案</button>
+        ${data.pets.length>1?'<button class="btn ghost del-pet" id="delPetBtn" style="margin-top:0">删除这个宝贝</button>':''}
+      </div>
+    </div>`;
+  }
+
   content.innerHTML=`
     <div class="panel-head"><h3>🐾 宠物档案</h3><p>管理你的毛孩子</p></div>
     <div class="pet-list">
@@ -1567,38 +2167,40 @@ function renderProfile(){
         </div>`).join('')}
     </div>
     <button class="btn add-pet" id="addPetBtn">＋ 添加新宠物</button>
-    <div class="profile-card">
-      <div class="panel-head" style="padding-top:0"><h3>${esc(p.name)||'编辑宠物'}</h3></div>
-      <div class="avatar-wrap" id="avatarWrap">${p.avatar?`<img src="${p.avatar}">`:'🐶'}</div>
-      <input type="file" accept="image/*" id="pAvatar" style="display:none">
-      <div class="field"><label>宠物名字</label><input type="text" id="pName" value="${esc(p.name)}" placeholder="叫什么名字？"></div>
-      <div class="field"><label>品种</label><input type="text" id="pBreed" value="${p.breed}" placeholder="如：柯基 / 英短"></div>
-      <div class="field"><label>性别</label><div class="chips" id="pGender"><span class="chip ${p.gender==='公'?'on':''}" data-v="公">弟弟</span><span class="chip ${p.gender==='母'?'on':''}" data-v="母">妹妹</span><span class="chip ${p.gender==='未知'?'on':''}" data-v="未知">未知</span></div></div>
-      <div class="field"><label>生日</label><input type="date" id="pBirth" value="${p.birth}"></div>
-      <button class="paw-save" id="pawSave">🐾 和我击掌吧</button>
-      ${data.pets.length>1?'<button class="btn ghost del-pet" id="delPetBtn">删除这个宝贝</button>':''}
-    </div>
+    ${body}
   `;
   document.querySelectorAll('.pet-row').forEach(row=>row.onclick=()=>{
-    data.currentPetId=row.dataset.pid; saveData(); renderProfile();
+    data.currentPetId=row.dataset.pid; editingProfile=false; saveData(); renderProfile();
   });
-  document.getElementById('addPetBtn').onclick=()=>{ addPet(); renderProfile(); };
+  document.getElementById('addPetBtn').onclick=()=>{ addPet(); editingProfile=true; renderProfile(); };
   document.getElementById('avatarWrap').onclick=()=>document.getElementById('pAvatar').click();
   document.getElementById('pAvatar').onchange=(e)=>{
     if(e.target.files[0]) openCropper(e.target.files[0]);
     e.target.value='';
   };
-  document.querySelectorAll('#pGender .chip').forEach(c=>c.onclick=function(){document.querySelectorAll('#pGender .chip').forEach(x=>x.classList.remove('on'));this.classList.add('on');});
-  document.getElementById('pawSave').onclick=()=>{
-    const cp=currentPet();
-    cp.name=document.getElementById('pName').value;
-    cp.breed=document.getElementById('pBreed').value;
-    cp.gender=document.querySelector('#pGender .chip.on')?.dataset.v||'';
-    cp.birth=document.getElementById('pBirth').value;
-    saveData();
-    alert('档案已保存 🐾');
-    renderProfile();
-  };
+
+  if(editingProfile || !hasInfo){
+    document.querySelectorAll('#pGender .chip').forEach(c=>c.onclick=function(){document.querySelectorAll('#pGender .chip').forEach(x=>x.classList.remove('on'));this.classList.add('on');});
+    document.getElementById('pawSave').onclick=()=>{
+      const cp=currentPet();
+      const newName=document.getElementById('pName').value.trim();
+      if(!newName){ alert('请给宝贝起个名字吧'); return; }
+      cp.name=newName;
+      cp.breed=document.getElementById('pBreed').value;
+      cp.gender=document.querySelector('#pGender .chip.on')?.dataset.v||'';
+      cp.birth=document.getElementById('pBirth').value;
+      saveData();
+      editingProfile=false;
+      detailMod=null; page='profile';
+      render(); updateNav();
+      toast('档案已保存 🐾');
+    };
+    const cancel=document.getElementById('cancelEditBtn');
+    if(cancel) cancel.onclick=()=>{ editingProfile=false; renderProfile(); };
+  }else{
+    document.getElementById('editProfileBtn').onclick=()=>{ editingProfile=true; renderProfile(); };
+  }
+
   const del=document.getElementById('delPetBtn');
   if(del) del.onclick=()=>{
     if(data.pets.length<=1){ alert('至少要保留一个宝贝哦'); return; }
@@ -1607,20 +2209,40 @@ function renderProfile(){
     data.pets=data.pets.filter(x=>x.id!==id);
     delete data.records[id]; delete data.streak[id]; delete data.lastDate[id]; delete data.waterLog[id]; delete data.reminders[id]; delete data.specials[id]; delete data.ledger[id];
     data.currentPetId=data.pets[0].id;
-    saveData(); renderProfile();
+    data.undoStack={}; editingProfile=false;
+    saveData();
+    detailMod=null; page='profile';
+    render(); updateNav();
+    toast('已删除，档案已刷新');
   };
+}
+
+function computeAge(birthStr){
+  const b=new Date(birthStr); const now=new Date();
+  if(isNaN(b)) return '年龄未知';
+  let months=(now.getFullYear()-b.getFullYear())*12+(now.getMonth()-b.getMonth());
+  if(now.getDate()<b.getDate()) months--;
+  if(months<0) months=0;
+  const years=Math.floor(months/12);
+  const rem=months%12;
+  if(years===0) return rem===0?'刚出生':rem+'个月';
+  return rem===0?years+'岁':years+'岁 '+rem+'个月';
 }
 
 // ========== 健康提醒页 ==========
 function renderHealthPage(){
   const list=getReminders(currentPetId());
-  content.innerHTML=`<div class="health-head"><h3>📝 健康事项提醒</h3></div>
+  const rec=todayRecord();
+  const doneN=list.filter(r=>(rec[r.id]||[]).length>0).length;
+  content.innerHTML=`<div class="health-head"><h3>📝 健康事项提醒</h3>
+      <p style="font-size:12px;color:var(--ink-soft);margin-top:6px;font-weight:500">今日已处理 ${doneN}/${list.length} · 周期性事项勾选后自动重置倒计时</p></div>
     <div class="health-list">
       ${list.map((r,i)=>{
         const c=computeReminder(r);
         const color=REMINDER_COLORS[r.color]||REMINDER_COLORS.green;
         const sub=formatReminderSub(r);
         const subClass=c.state==='overdue'?'overdue':(c.state==='today'?'today':'normal');
+        const done=(rec[r.id]||[]).length>0;
         return `<div class="health-card ${r.color}" data-id="${r.id}">
           <div class="hc-bar" style="background:${color.bar}"></div>
           <div class="hc-main">
@@ -1628,18 +2250,25 @@ function renderHealthPage(){
             <div class="hc-sub ${subClass}">${sub}</div>
           </div>
           <div class="hc-actions">
-            <button class="hc-btn done" data-id="${r.id}">已处理</button>
+            <button class="hc-btn done" data-id="${r.id}" style="${done?'background:#CFE4DD;color:#6B4F47':''}">${done?'今日已完成 ✓':'已处理'}</button>
             <button class="hc-btn del" data-id="${r.id}">删除</button>
           </div>
         </div>`;
       }).join('')}
     </div>
     <button class="add-reminder" id="addReminderBtn">＋ 添加提醒</button>
+    <button class="add-reminder" id="toggleProgressBtn" style="border-style:solid;border-color:#E8E3DC;color:var(--ink-soft);font-size:13.5px">
+      ${countHealthInProgress()?'☑ 已开启：健康提醒计入完成度':'☐ 当前：健康提醒不计入完成度（点此开启）'}
+    </button>
   `;
   content.querySelectorAll('.health-card').forEach(card=>card.onclick=()=>openEditReminder(card.dataset.id));
-  content.querySelectorAll('.health-card .hc-btn.done').forEach(b=>b.onclick=(e)=>{ e.stopPropagation(); completeReminder(b.dataset.id); });
+  content.querySelectorAll('.health-card .hc-btn.done').forEach(b=>b.onclick=(e)=>{ e.stopPropagation(); toggleReminderDone(b.dataset.id); });
   content.querySelectorAll('.health-card .hc-btn.del').forEach(b=>b.onclick=(e)=>{ e.stopPropagation(); deleteReminder(b.dataset.id); });
   document.getElementById('addReminderBtn').onclick=openAddReminder;
+  document.getElementById('toggleProgressBtn').onclick=()=>{
+    setCountHealthInProgress(!countHealthInProgress());
+    renderHealthPage();
+  };
 }
 
 function deleteReminder(id){
@@ -1657,7 +2286,9 @@ function openAddReminder(){
   const colors=Object.keys(REMINDER_COLORS);
   content.innerHTML=`<div class="detail-card"><h2>＋ 添加健康提醒</h2>
     <div class="field"><label>提醒名称</label><input type="text" id="rName" placeholder="如：剪指甲 / 体检"></div>
-    <div class="field"><label>上次处理日期（倒计时起点）</label><input type="date" id="rLast" value="${todayISO()}"></div>
+    <div class="field"><label>上次处理日期（倒计时起点）<span style="color:#C15B50">*必填</span></label><input type="date" id="rLast" value="">
+      <div class="tips-line" style="margin-top:8px">⚠️ 请选择「上一次处理」的真实日期，倒计时从这一天开始计算。如果还没做过，请选择你打算开始记录的日期。</div>
+    </div>
     <div class="field"><label>周期（天）</label><input type="number" id="rCycle" value="30" min="1"></div>
     <div id="rPreview"></div>
     <div class="field"><label>颜色标记</label><div class="color-grid" id="rColor">
@@ -1681,6 +2312,7 @@ function saveReminder(){
   const color=document.querySelector('#rColor .color-chip.on')?.dataset.v||'red';
   const icon=pickIconByName(name,'pill');
   if(!name){ alert('请输入提醒名称'); return; }
+  if(!last){ alert('请选择「上次处理日期」～\n倒计时需要从这一天开始计算。'); document.getElementById('rLast').focus(); return; }
   const list=getReminders(currentPetId());
   const id='r_'+Date.now().toString(36);
   list.push({id,name,cycleDays:cycle,color,icon,lastDone:last?new Date(last).toLocaleDateString('zh-CN'):'',history:[]});
@@ -1788,7 +2420,9 @@ function openAddSpecial(){
   const colors=Object.keys(REMINDER_COLORS);
   content.innerHTML=`<div class="detail-card"><h2>＋ 添加特殊情况</h2>
     <div class="field"><label>事项名称</label><input type="text" id="rName" placeholder="如：呕吐观察 / 掉毛增多"></div>
-    <div class="field"><label>上次处理日期（倒计时起点）</label><input type="date" id="rLast" value="${todayISO()}"></div>
+    <div class="field"><label>上次处理日期（倒计时起点）<span style="color:#C15B50">*必填</span></label><input type="date" id="rLast" value="">
+      <div class="tips-line" style="margin-top:8px">⚠️ 请选择「上一次处理 / 上一次出现」的真实日期，倒计时从这一天开始计算。</div>
+    </div>
     <div class="field"><label>周期（天）</label><input type="number" id="rCycle" value="14" min="1"></div>
     <div id="rPreview"></div>
     <div class="field"><label>颜色标记</label><div class="color-grid" id="rColor">
@@ -1807,12 +2441,14 @@ function openAddSpecial(){
 function saveSpecial(){
   const name=document.getElementById('rName').value.trim();
   const cycle=parseInt(document.getElementById('rCycle').value)||14;
+  const last=document.getElementById('rLast').value;
   const color=document.querySelector('#rColor .color-chip.on')?.dataset.v||'red';
   const icon=pickIconByName(name,'heart');
   if(!name){ alert('请输入事项名称'); return; }
+  if(!last){ alert('请选择「上次处理日期」～\n倒计时需要从这一天开始计算。'); document.getElementById('rLast').focus(); return; }
   const list=getSpecials(currentPetId());
   const id='s_'+Date.now().toString(36);
-  list.push({id,name,cycleDays:cycle,color,icon,lastDone:'',history:[]});
+  list.push({id,name,cycleDays:cycle,color,icon,lastDone:new Date(last).toLocaleDateString('zh-CN'),history:[]});
   saveData();
   detailMod=null; render();
 }
